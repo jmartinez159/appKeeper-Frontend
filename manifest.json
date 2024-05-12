@@ -1,7 +1,7 @@
 {
     "manifest_version" : 3,
     "name" : "Application Keeper",
-    "version" : "1.0",
+    "version" : "0.3.7",
     "description" : "This Application keeps track of what specific job posts an applicant has applied to.",
     "permissions": ["tabs"],
     "action": {
