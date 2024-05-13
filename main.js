@@ -5,21 +5,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //Wait for following function to finish executing
     let link = await getURL();
+    //Need to get a unique job key
+    let key = jobKey(link);
     //Then we call out request function to communicate with backend
-    checkKeeper(link);
+    checkKeeper(key);
     //Alert User of checking
     alert('Saved');
   });
 });
 
 /* -------------------------------------------------------------- */
-//grabs url
+/* -----                     GETURL FUNCTION               -----  */
 function getURL(){
 
   return new Promise((resolve, reject) => {
     chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
-      let currentTabURL = encodeURIComponent(tabs[0].url);
-      console.log(currentTabURL);
+      let currentTabURL = tabs[0].url;
       resolve(currentTabURL);
     });
 
@@ -27,11 +28,29 @@ function getURL(){
 }
 
 /* -------------------------------------------------------------- */
-//sends message to the backend
-async function checkKeeper(url){
+/* -----                     JOBKEY FUNCTION               -----  */
+function jobKey(link){
 
+  console.log("JOB KEY URL:", link);
+  const pattern = /\/jobs\/([\w\d]+)[^\w\d]?/;
+  const match = link.match(pattern);
+
+  if (match) {
+    const identifier = match[1];
+    console.log(identifier);
+    return identifier;
+  }
+
+  return 'No ID Found';
+}
+
+/* -------------------------------------------------------------- */
+/* -----               CHECK KEEPER FUNCTION               -----  */
+async function checkKeeper(key){
+
+  //sends message to the backend
   let backendURL = 'http://localhost:3000';
-  let reqBody = {'URL': url};
+  let reqBody = {'KEY': key};
   /* GET Request 
   let options = {
 	  method: 'GET',
@@ -48,7 +67,7 @@ async function checkKeeper(url){
     }
   };
   
-  console.log("URL: " + url);
+  console.log("POST Request sent: KEY: " + key);
   try {
 
     const response = await fetch(backendURL, options);
