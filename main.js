@@ -1,14 +1,28 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-  var button = document.getElementById('appliedButton');
-  button.addEventListener('click', async function(){
+  var companyText = document.getElementById('companyText');
+  var checkButton = document.getElementById('checkButton');
+  var appliedButton = document.getElementById('appliedButton');
 
+  /* --- Check Button Listener --- */
+  checkButton.addEventListener('click', async function(){
+
+    let companyName = companyText.value;  //Need to check that this isn't NULL
     //Wait for following function to finish executing
     let link = await getURL();
     //Need to get a unique job key
-    let key = jobKey(link);
+    let jKey = jobKey(link);
+    //Make a key with company name and the job id
+    let keeperKey = companyName + '-' + jKey;
+    console.log("Key Configured: ", keeperKey);
     //Then we call out request function to communicate with backend
-    checkKeeper(key);
+    checkKeeper(keeperKey);
+    alert('CHECKED');
+  });
+
+  /* --- Applied Button Listener --- */
+  appliedButton.addEventListener('click', async function(){
+
     //Alert User of checking
     alert('Saved');
   });
@@ -32,16 +46,49 @@ function getURL(){
 function jobKey(link){
 
   console.log("JOB KEY URL:", link);
-  const pattern = /\/jobs\/([\w\d]+)[^\w\d]?/;
-  const match = link.match(pattern);
+  let keyFound = 'No ID Found';
 
-  if (match) {
-    const identifier = match[1];
-    console.log(identifier);
-    return identifier;
+  //checks for path /jobs/[key]
+  let pattern = /\/jobs\/([\w\d]+)[^\w\d]?/;
+  let match = link.match(pattern);
+  if(match){
+    
+    keyFound = match[1];
+    console.log("Found Key: ", keyFound);
+    return keyFound;
   }
 
-  return 'No ID Found';
+  //checks for path /job/[key]
+  pattern = /\/job\/([\w\d]+)[^\w\d]?/;
+  match = link.match(pattern);
+  if(match){
+    
+    keyFound = match[1];
+    console.log("Found Key: ", keyFound);
+    return keyFound;
+  }
+
+  //checks for jobID in link jobid=[key]
+  pattern = /jobid=([a-zA-Z0-9]+)/i;
+  match = link.match(pattern);
+  if(match){
+
+    keyFound = match[1];
+    console.log("Found Key: ", keyFound);
+    return keyFound;
+  }
+
+  //checks for jid in link jid=[key]
+  pattern = /jid=([a-zA-Z0-9]+)/i;
+  match = link.match(pattern);
+  if(match){
+
+    keyFound = match[1];
+    console.log("Found Key: ", keyFound);
+    return keyFound;
+  }
+
+  return keyFound;
 }
 
 /* -------------------------------------------------------------- */
