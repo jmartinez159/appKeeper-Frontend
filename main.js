@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
 
+  //Connecting buttons
   var companyText = document.getElementById('companyText');
   var checkButton = document.getElementById('checkButton');
   var appliedButton = document.getElementById('appliedButton');
@@ -7,24 +8,40 @@ document.addEventListener('DOMContentLoaded', function() {
   /* --- Check Button Listener --- */
   checkButton.addEventListener('click', async function(){
 
-    let companyName = companyText.value;  //Need to check that this isn't NULL
-    //Wait for following function to finish executing
-    let link = await getURL();
-    //Need to get a unique job key
-    let jKey = jobKey(link);
-    //Make a key with company name and the job id
-    let keeperKey = companyName + '-' + jKey;
-    console.log("Key Configured: ", keeperKey);
-    //Then we call out request function to communicate with backend
+    //Making key
+    let keeperKey = null;
+    try{
+      keeperKey = await makeKey(companyText.value);
+    } catch(error){
+      console.error('Error making key: ', error);
+    }
+    
+    //Call out request function to check for a matching key
     checkKeeper(keeperKey);
-    alert('CHECKED');
+    alert('Checking');
   });
 
   /* --- Applied Button Listener --- */
   appliedButton.addEventListener('click', async function(){
 
+    //Making Key
+    let keeperKey = null;
+    try{
+      keeperKey = await makeKey(companyText.value);
+    } catch(error){
+      console.error('Error making key: ', error);
+    }
+
+    //Getting date
+    let today = new Date();
+    let dd = String(today.getDate()).padStart(2, '0');
+    let mm = String(today.getMonth() + 1).padStart(2, '0');
+    let yyyy = today.getFullYear();
+    let date = mm + '/' + dd + '/' + yyyy;
+    console.log("Date Applied: ", date);
+    setKey(keeperKey, date);
     //Alert User of checking
-    alert('Saved');
+    alert('Applied');
   });
 });
 
@@ -92,6 +109,25 @@ function jobKey(link){
 }
 
 /* -------------------------------------------------------------- */
+/* -----                 MAKE KEY FUNCTION                 -----  */
+async function makeKey(companyName){
+
+  //Checking for valid input for Company Name
+  if(!companyName){
+    throw new Error('Company name is required');
+  }
+
+  //Wait for following function to finish executing
+  let link = await getURL();
+  //Need to get a unique job key
+  let jKey = jobKey(link);
+  //Make a key with company name and the job id
+  let keeperKey = companyName + '-' + jKey;
+  console.log("Key Configured: ", keeperKey);
+  return keeperKey;
+}
+
+/* -------------------------------------------------------------- */
 /* -----               CHECK KEEPER FUNCTION               -----  */
 async function checkKeeper(key){
 
@@ -121,6 +157,32 @@ async function checkKeeper(key){
     const result = await response.json();
     console.log(result);
   } catch (error) {
+    console.error(error);
+  }
+
+}
+
+/* -------------------------------------------------------------- */
+/* -----                 SET KEY FUNCTION                  -----  */
+async function setKey(key, date){
+
+  let backendURL = 'http://localhost:3000';
+  let reqBody = {'KEY': key, 'DATE': date};
+  let options = {
+    method: 'POST',
+    body: JSON.stringify(reqBody),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+
+  console.log("POST Request sent: ", reqBody);
+  try{
+
+    const response = await fetch(backendURL, options);
+    const result = await response.json();
+    console.log(result);
+  } catch (error){
     console.error(error);
   }
 
