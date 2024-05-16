@@ -63,7 +63,7 @@ function getURL(){
 function jobKey(link){
 
   console.log("JOB KEY URL:", link);
-  let keyFound = 'No ID Found';
+  let keyFound = 'NJID';
 
   //checks for path /jobs/[key]
   let pattern = /\/jobs\/([\w\d]+)[^\w\d]?/;
@@ -131,17 +131,8 @@ async function makeKey(companyName){
 /* -----               CHECK KEEPER FUNCTION               -----  */
 async function checkKeeper(key){
 
-  //sends message to the backend
-  let backendURL = 'http://localhost:3000';
+  let backendURL = 'http://localhost:3000/check';
   let reqBody = {'KEY': key};
-  /* GET Request 
-  let options = {
-	  method: 'GET',
-	  headers: {
-		  'Content-Type': 'application/json'
-	  }
-  };
-  */
   let options = {
     method: 'POST',
     body: JSON.stringify(reqBody),
@@ -166,7 +157,7 @@ async function checkKeeper(key){
 /* -----                 SET KEY FUNCTION                  -----  */
 async function setKey(key, date){
 
-  let backendURL = 'http://localhost:3000';
+  let backendURL = 'http://localhost:3000/submit';
   let reqBody = {'KEY': key, 'DATE': date};
   let options = {
     method: 'POST',
