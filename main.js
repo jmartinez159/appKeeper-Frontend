@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var companyText = document.getElementById('companyText');
   var checkButton = document.getElementById('checkButton');
   var appliedButton = document.getElementById('appliedButton');
+  var keeperMsg = document.getElementById('keeperMsg');
 
   /* --- Check Button Listener --- */
   checkButton.addEventListener('click', async function(){
@@ -146,7 +147,9 @@ async function checkKeeper(key){
 
     const response = await fetch(backendURL, options);
     const result = await response.json();
-    console.log(result);
+    console.log(result.message);
+    let msg = "Last Applied: " + result.message;
+    keeperMsg.textContent = msg;
   } catch (error) {
     console.error(error);
   }
@@ -173,6 +176,7 @@ async function setKey(key, date){
     const response = await fetch(backendURL, options);
     const result = await response.json();
     console.log(result);
+    keeperMsg.textContent = result.message;
   } catch (error){
     console.error(error);
   }
