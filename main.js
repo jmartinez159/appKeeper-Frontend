@@ -141,8 +141,8 @@ async function checkKeeper(key){
       'Content-Type': 'application/json'
     }
   };
-  
   console.log("POST Request sent: KEY: " + key);
+  
   try {
 
     const response = await fetch(backendURL, options);
@@ -169,8 +169,8 @@ async function setKey(key, date){
       'Content-Type': 'application/json'
     }
   };
-
   console.log("POST Request sent: ", reqBody);
+
   try{
 
     const response = await fetch(backendURL, options);
